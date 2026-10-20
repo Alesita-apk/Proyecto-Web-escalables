@@ -1,0 +1,31 @@
+<article class="movie-card">
+  <img [src]="pelicula().imagen" [alt]="'Póster de ' + pelicula().titulo" />
+  <div class="movie-info">
+    <span class="classification">{{ pelicula().clasificacion }}</span>
+    <h2>{{ pelicula().titulo }}</h2>
+    <p>{{ pelicula().genero }} · {{ pelicula().duracion }}</p>
+    <p>{{ pelicula().sinopsis }}</p>
+    <strong>Horarios</strong>
+    <div class="time-list">
+      @for (funcion of funciones(); track funcion.id) {
+        @if (rol() === 'cliente') {
+          <button class="button button-primary" (click)="solicitarCompra(funcion)">
+            {{ funcion.horario }}
+          </button>
+        } @else if (rol() === null) {
+          <a
+            routerLink="/login"
+            [queryParams]="{ returnUrl: '/compra/' + funcion.id }"
+            class="button button-primary"
+          >
+            {{ funcion.horario }}
+          </a>
+        } @else {
+          <span class="help-text">{{ funcion.horario }}</span>
+        }
+      } @empty {
+        <span class="help-text">Sin funciones para esta fecha.</span>
+      }
+    </div>
+  </div>
+</article>

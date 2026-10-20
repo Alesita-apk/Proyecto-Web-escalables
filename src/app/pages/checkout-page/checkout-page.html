@@ -1,0 +1,137 @@
+<main class="section page-section">
+  <div class="container">
+    @if (funcion && pelicula) {
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">RESERVACIÓN</p>
+          <h2>{{ pelicula.titulo }}</h2>
+        </div>
+        <a routerLink="/" class="button button-secondary">Volver a cartelera</a>
+      </div>
+      <section class="modal-box checkout-box">
+        <div class="modal-content">
+          <div class="steps">
+            <span [class.active]="paso === 1">1. Cajón</span
+            ><span [class.active]="paso === 2">2. Dulcería</span
+            ><span [class.active]="paso === 3">3. Resumen</span
+            ><span [class.active]="paso === 4">4. Boleto</span>
+          </div>
+          @if (paso === 1) {
+            <p><strong>Función:</strong> {{ funcion.fecha }} · {{ funcion.horario }}</p>
+            <p class="help-text">Selecciona uno o varios cajones disponibles.</p>
+            <div class="parking-map seat-map">
+              <div class="screen">PANTALLA</div>
+              @for (cajon of autocine.cajones(); track cajon.id) {
+                <button
+                  [disabled]="ocupado(cajon.id)"
+                  [class.occupied]="ocupado(cajon.id)"
+                  [class.selected]="seleccionados.includes(cajon.id)"
+                  (click)="alternarCajon(cajon.id)"
+                >
+                  <span>{{ cajon.id }}</span
+                  ><small>{{ cajon.tipoVehiculo }}</small>
+                </button>
+              }
+              <div class="legend">
+                <span>□ Disponible</span><span class="red">■ Seleccionado</span
+                ><span class="gray">■ Ocupado</span>
+              </div>
+            </div>
+          }
+          @if (paso === 2) {
+            <p class="help-text">Agrega alimentos. Este paso es opcional.</p>
+            <div class="food-grid">
+              @for (producto of autocine.alimentos(); track producto.id) {
+                <article class="food-card">
+                  <h3>{{ producto.nombre }}</h3>
+                  <p>{{ producto.categoria }} · {{ producto.descripcion }}</p>
+                  <strong>{{ producto.precio | currency: 'MXN' }}</strong>
+                  <p>{{ producto.existencias }} disponibles</p>
+                  <div class="counter">
+                    <button (click)="cambiarCantidad(producto, -1)">−</button
+                    ><span>{{ cantidades[producto.id] ?? 0 }}</span
+                    ><button
+                      [disabled]="(cantidades[producto.id] ?? 0) >= producto.existencias"
+                      (click)="cambiarCantidad(producto, 1)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+          @if (paso === 3) {
+            <div class="summary">
+              <h3>Resumen del pedido</h3>
+              <p>
+                <span>Película</span><strong>{{ pelicula.titulo }}</strong>
+              </p>
+              <p>
+                <span>Fecha y horario</span
+                ><strong>{{ funcion.fecha }} · {{ funcion.horario }}</strong>
+              </p>
+              <p>
+                <span>Cajones</span><strong>{{ seleccionados.join(', ') }}</strong>
+              </p>
+              <p>
+                <span>Boletos</span><strong>{{ subtotalBoletos | currency: 'MXN' }}</strong>
+              </p>
+              <p>
+                <span>Alimentos</span><strong>{{ subtotalAlimentos | currency: 'MXN' }}</strong>
+              </p>
+              <p class="summary-total">
+                <span>Total</span><strong>{{ total | currency: 'MXN' }}</strong>
+              </p>
+              <p class="help-text">Reserva de demostración: no se realizan cobros.</p>
+            </div>
+          }
+          @if (paso === 4 && reserva) {
+            <div class="ticket">
+              <h3>Compra realizada correctamente</h3>
+              <div
+                class="qr-placeholder"
+                role="img"
+                [attr.aria-label]="'Representación ilustrativa para folio ' + reserva.codigo"
+              >
+                <strong>QR DE DEMOSTRACIÓN</strong>
+              </div>
+              <p>
+                <strong>{{ pelicula.titulo }}</strong>
+              </p>
+              <p>
+                {{ funcion.fecha }} · {{ funcion.horario }} · Cajón {{ reserva.cajones.join(', ') }}
+              </p>
+              <p>{{ alimentosTexto }}</p>
+              <code>{{ reserva.codigo }}</code
+              ><button class="button button-secondary" (click)="descargar()">
+                Descargar boleto
+              </button>
+            </div>
+          }
+          <div class="purchase-footer">
+            <strong>Total: {{ total | currency: 'MXN' }}</strong>
+            <div>
+              @if (mensaje) {
+                <span class="notice">{{ mensaje }}</span>
+              }
+              @if (paso > 1 && paso < 4) {
+                <button class="button button-secondary" (click)="anterior()">Anterior</button>
+              }
+              @if (paso < 4) {
+                <button class="button button-primary" (click)="continuar()">
+                  {{ paso === 3 ? 'Finalizar compra' : 'Continuar' }}
+                </button>
+              } @else {
+                <a class="button button-primary" routerLink="/cuenta">Ir a mi cuenta</a>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    } @else {
+      <p>La función seleccionada no existe.</p>
+      <a routerLink="/">Volver a cartelera</a>
+    }
+  </div>
+</main>

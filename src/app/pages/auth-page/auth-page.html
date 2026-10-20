@@ -1,0 +1,35 @@
+<main class="section page-section">
+  <div class="container auth-layout">
+    <section class="modal-box">
+      <div class="modal-header">
+        <h2>{{ registro ? 'Crear cuenta' : 'Iniciar sesión' }}</h2>
+      </div>
+      <div class="modal-content">
+        @if (mensaje) {
+          <div class="notice">{{ mensaje }}</div>
+        }
+        <form class="form" [formGroup]="form" (ngSubmit)="enviar()">
+          @if (registro) {
+            <label>Nombre completo<input formControlName="nombre" /></label>
+          }
+          <label>Correo electrónico<input type="email" formControlName="correo" /></label>
+          <label>Contraseña<input type="password" formControlName="contrasena" /></label>
+          <button class="button button-primary" type="submit">
+            {{ registro ? 'Registrarme' : 'Entrar' }}
+          </button>
+        </form>
+        <p>
+          <a [routerLink]="registro ? '/login' : '/registro'">{{
+            registro ? 'Ya tengo una cuenta' : 'Crear una cuenta nueva'
+          }}</a>
+        </p>
+        @if (!registro) {
+          <p class="help-text">
+            Cuentas demo: cliente@autocine.mx, empleado@autocine.mx o admin@autocine.mx. Contraseña:
+            123456.
+          </p>
+        }
+      </div>
+    </section>
+  </div>
+</main>

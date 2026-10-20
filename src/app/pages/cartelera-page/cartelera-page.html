@@ -1,0 +1,30 @@
+<main class="section page-section">
+  <div class="container">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">PELÍCULAS DISPONIBLES</p>
+        <h1>Cartelera</h1>
+      </div>
+      <label class="date-field"
+        >Fecha:
+        <select [value]="fecha" (change)="cambiarFecha($event)">
+          @for (dia of fechas; track dia.valor) {
+            <option [value]="dia.valor">{{ dia.etiqueta }}</option>
+          }
+        </select>
+      </label>
+    </div>
+    <div class="movie-grid">
+      @for (pelicula of autocine.peliculas(); track pelicula.id) {
+        <app-movie-card
+          [pelicula]="pelicula"
+          [funciones]="funcionesDe(pelicula.id)"
+          [rol]="rolUsuario"
+          (seleccionarFuncion)="iniciarCompra($event)"
+        />
+      } @empty {
+        <p class="help-text">No hay películas en cartelera por el momento.</p>
+      }
+    </div>
+  </div>
+</main>

@@ -1,0 +1,23 @@
+.not-found {
+  display: grid;
+  min-height: 45vh;
+  align-content: center;
+  justify-items: start;
+  gap: 14px;
+}
+
+.not-found h1 {
+  max-width: 720px;
+  margin: 0;
+  color: #172641;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(42px, 8vw, 76px);
+  font-weight: 700;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.not-found p:not(.eyebrow) {
+  margin: 0 0 8px;
+  color: #64748b;
+}

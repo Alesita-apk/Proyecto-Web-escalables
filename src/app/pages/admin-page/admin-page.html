@@ -1,0 +1,270 @@
+<main class="section page-section">
+  <div class="container">
+    <p class="eyebrow">CONFIGURACIÓN</p>
+    <h2>Administración</h2>
+    <div class="tabs">
+      @for (item of secciones; track item.id) {
+        <button
+          [class.active]="tab === item.id"
+          (click)="tab = item.id; editor = null; mensaje = ''"
+        >
+          {{ item.label }}
+        </button>
+      }
+    </div>
+    @if (mensaje) {
+      <p class="notice">{{ mensaje }}</p>
+    }
+    @if (tab === 'resumen') {
+      <div class="stats">
+        <div>
+          <strong>{{ autocine.reservas().length }}</strong
+          ><span>Reservas</span>
+        </div>
+        <div>
+          <strong>{{ ventas | currency: 'MXN' }}</strong
+          ><span>Ventas simuladas</span>
+        </div>
+        <div>
+          <strong>{{ cajonesVendidos }}</strong
+          ><span>Cajones reservados</span>
+        </div>
+        <div>
+          <strong>{{ productosVendidos }}</strong
+          ><span>Productos vendidos</span>
+        </div>
+      </div>
+    }
+    @if (tab === 'peliculas') {
+      <div class="admin-heading">
+        <h3>Catálogo de películas</h3>
+        <button class="button button-primary" (click)="abrir('pelicula')">Agregar película</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Película</th>
+              <th>Clasificación</th>
+              <th>Duración</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of autocine.peliculas(); track p.id) {
+              <tr>
+                <td>
+                  {{ p.titulo }}<br /><small>{{ p.genero }}</small>
+                </td>
+                <td>{{ p.clasificacion }}</td>
+                <td>{{ p.duracion }}</td>
+                <td>
+                  <button (click)="abrir('pelicula', p.id)">Editar</button
+                  ><button (click)="eliminarPelicula(p.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (editor === 'pelicula') {
+        <form class="form editor-form" [formGroup]="peliculaForm" (ngSubmit)="guardarPelicula()">
+          <h3>{{ editId ? 'Editar película' : 'Agregar película' }}</h3>
+          <label>Título<input formControlName="titulo" /></label
+          ><label>Sinopsis<textarea formControlName="sinopsis"></textarea></label
+          ><label>Género<input formControlName="genero" /></label
+          ><label>Duración<input formControlName="duracion" /></label
+          ><label
+            >Clasificación<select formControlName="clasificacion">
+              <option>A</option>
+              <option>B</option>
+              <option>B15</option>
+              <option>C</option>
+            </select></label
+          ><label>URL del póster<input formControlName="imagen" type="url" /></label
+          ><button class="button button-primary">Guardar</button>
+        </form>
+      }
+    }
+    @if (tab === 'funciones') {
+      <div class="admin-heading">
+        <h3>Programación de funciones</h3>
+        <button class="button button-primary" (click)="abrir('funcion')">Agregar función</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Película</th>
+              <th>Fecha</th>
+              <th>Horario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (f of autocine.funciones(); track f.id) {
+              <tr>
+                <td>{{ peliculaNombre(f.peliculaId) }}</td>
+                <td>{{ f.fecha }}</td>
+                <td>{{ f.horario }}</td>
+                <td>
+                  <button (click)="abrir('funcion', f.id)">Editar</button
+                  ><button (click)="eliminarFuncion(f.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (editor === 'funcion') {
+        <form class="form editor-form" [formGroup]="funcionForm" (ngSubmit)="guardarFuncion()">
+          <h3>{{ editId ? 'Editar función' : 'Programar función' }}</h3>
+          <label
+            >Película<select formControlName="peliculaId">
+              @for (p of autocine.peliculas(); track p.id) {
+                <option [ngValue]="p.id">{{ p.titulo }}</option>
+              }
+            </select></label
+          ><label>Fecha<input type="date" formControlName="fecha" /></label
+          ><label>Horario<input type="time" formControlName="horario" /></label
+          ><button class="button button-primary">Guardar</button>
+        </form>
+      }
+    }
+    @if (tab === 'dulceria') {
+      <div class="admin-heading">
+        <h3>Inventario de dulcería</h3>
+        <button class="button button-primary" (click)="abrir('alimento')">Agregar producto</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Existencias</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of autocine.alimentos(); track a.id) {
+              <tr>
+                <td>
+                  {{ a.nombre }}<br /><small>{{ a.descripcion }}</small>
+                </td>
+                <td>{{ a.categoria }}</td>
+                <td>{{ a.precio | currency: 'MXN' }}</td>
+                <td>{{ a.existencias }}</td>
+                <td>
+                  <button (click)="abrir('alimento', a.id)">Editar</button
+                  ><button (click)="eliminarAlimento(a.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (editor === 'alimento') {
+        <form class="form editor-form" [formGroup]="alimentoForm" (ngSubmit)="guardarAlimento()">
+          <h3>{{ editId ? 'Editar producto' : 'Agregar producto' }}</h3>
+          <label>Nombre<input formControlName="nombre" /></label
+          ><label>Descripción<input formControlName="descripcion" /></label
+          ><label>Categoría<input formControlName="categoria" /></label
+          ><label
+            >Precio<input type="number" min="0.01" step="0.01" formControlName="precio" /></label
+          ><label>Existencias<input type="number" min="0" formControlName="existencias" /></label
+          ><button class="button button-primary">Guardar</button>
+        </form>
+      }
+    }
+    @if (tab === 'cajones') {
+      <h3>Espacios del estacionamiento</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Cajón</th>
+              <th>Tipo de vehículo</th>
+              <th>Reservado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of autocine.cajones(); track c.id) {
+              <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.tipoVehiculo }}</td>
+                <td>{{ reservado(c.id) ? 'Sí' : 'No' }}</td>
+                <td>
+                  <button [disabled]="reservado(c.id)" (click)="cambiarTipo(c.id)">
+                    {{ c.tipoVehiculo === 'Automóvil' ? 'Marcar accesible' : 'Marcar estándar' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @if (tab === 'empleados') {
+      <div class="admin-heading">
+        <h3>Cuentas de empleados</h3>
+        <button class="button button-primary" (click)="abrir('empleado')">Crear empleado</button>
+      </div>
+      @for (empleado of empleados; track empleado.id) {
+        <article class="simple-card">
+          <strong>{{ empleado.nombre }}</strong
+          ><span>{{ empleado.correo }}</span>
+        </article>
+      }
+      @if (editor === 'empleado') {
+        <form class="form editor-form" [formGroup]="empleadoForm" (ngSubmit)="guardarEmpleado()">
+          <label>Nombre<input formControlName="nombre" /></label
+          ><label>Correo<input type="email" formControlName="correo" /></label
+          ><label>Contraseña temporal<input type="password" formControlName="contrasena" /></label
+          ><button class="button button-primary">Crear cuenta</button>
+        </form>
+      }
+    }
+    @if (tab === 'reportes') {
+      <h3>Reservas y ventas</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Cliente</th>
+              <th>Película</th>
+              <th>Función</th>
+              <th>Cajones</th>
+              <th>Alimentos</th>
+              <th>Total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of autocine.reservas(); track r.id) {
+              <tr>
+                <td>{{ r.codigo }}</td>
+                <td>{{ r.correo }}</td>
+                <td>{{ r.pelicula }}</td>
+                <td>{{ r.fecha }} · {{ r.horario }}</td>
+                <td>{{ r.cajones.join(', ') }}</td>
+                <td>
+                  {{ r.alimentos.map((a) => a.cantidad + ' × ' + a.nombre).join(', ') || '—' }}
+                </td>
+                <td>{{ r.total | currency: 'MXN' }}</td>
+                <td>{{ r.estado }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8">Aún no hay ventas registradas en esta sesión.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</main>

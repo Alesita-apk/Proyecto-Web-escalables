@@ -1,0 +1,64 @@
+<main class="section page-section">
+  <div class="container">
+    <p class="eyebrow">OPERACIONES</p>
+    <h2>Panel de empleado</h2>
+    <div class="tabs">
+      <button [class.active]="tab === 'mapa'" (click)="tab = 'mapa'">Mapa de funciones</button
+      ><button [class.active]="tab === 'validar'" (click)="tab = 'validar'">
+        Validar folio / Entregar dulcería
+      </button>
+    </div>
+    @if (tab === 'mapa') {
+      <h3>Ocupación del estacionamiento</h3>
+      <label class="date-field"
+        >Función:
+        <select [(ngModel)]="funcionId">
+          @for (f of autocine.funciones(); track f.id) {
+            <option [ngValue]="f.id">
+              {{ autocine.peliculas().find((p) => p.id === f.peliculaId)?.titulo }} ·
+              {{ f.fecha }} · {{ f.horario }}
+            </option>
+          }
+        </select>
+      </label>
+      @if (funcionId) {
+        <div class="parking-map">
+          <div class="screen">PANTALLA</div>
+          <div class="employee-parking-grid">
+            @for (c of autocine.cajones(); track c.id) {
+              <div class="employee-parking-space" [class.occupied]="ocupados().includes(c.id)">
+                <strong>{{ c.id }}</strong
+                ><small>{{ c.tipoVehiculo }}</small
+                ><small>{{ ocupados().includes(c.id) ? 'Ocupado' : 'Disponible' }}</small>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <p>No hay funciones programadas.</p>
+      }
+    }
+    @if (tab === 'validar') {
+      <div class="validation-box">
+        <h3>Validar boleto y entrega</h3>
+        <label class="date-field"
+          >Operación:<select [(ngModel)]="modo" (ngModelChange)="resultado = ''">
+            <option value="acceso">Validar acceso al estacionamiento</option>
+            <option value="dulceria">Entregar alimentos del pedido</option>
+          </select></label
+        >
+        <p>Escribe el folio del boleto de demostración.</p>
+        <label
+          >Folio del boleto<input
+            [(ngModel)]="codigo"
+            placeholder="ACD-000001"
+            (ngModelChange)="resultado = ''"
+        /></label>
+        <button class="button button-primary" (click)="validar()">Validar y registrar</button>
+        @if (resultado) {
+          <div [class.success]="correcto" [class.notice]="!correcto">{{ resultado }}</div>
+        }
+      </div>
+    }
+  </div>
+</main>

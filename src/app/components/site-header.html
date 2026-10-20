@@ -1,0 +1,23 @@
+<header class="site-header">
+  <div class="container header-content">
+    <a class="brand" routerLink="/">
+      <img class="brand-logo" src="/autocine-luna-logo.png" alt="Logo de Autocine Luna" />
+      <span><strong>Autocine Luna</strong><small>Sistema de reservaciones</small></span>
+    </a>
+    <nav>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a routerLink="/cartelera" routerLinkActive="active">Cartelera</a>
+      <a routerLink="/informacion" routerLinkActive="active">Información</a>
+    </nav>
+    <div class="header-actions">
+      @if (autocine.usuarioActual(); as usuario) {
+        @if (usuario.rol === 'cliente') { <a class="button button-light" routerLink="/cuenta">Mi cuenta</a> }
+        @if (usuario.rol === 'empleado') { <a class="button button-light" routerLink="/empleado">Panel empleado</a> }
+        @if (usuario.rol === 'admin') { <a class="button button-light" routerLink="/admin">Administración</a> }
+        <button class="text-button" (click)="cerrarSesion()">Salir</button>
+      } @else {
+        <a class="button button-light" routerLink="/login">Iniciar sesión</a>
+      }
+    </div>
+  </div>
+</header>

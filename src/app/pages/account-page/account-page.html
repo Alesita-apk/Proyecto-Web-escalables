@@ -1,0 +1,100 @@
+<main class="section page-section">
+  <div class="container">
+    <p class="eyebrow">CUENTA DE CLIENTE</p>
+    <h2>Mi cuenta</h2>
+    <div class="tabs">
+      <button [class.active]="tab === 'perfil'" (click)="tab = 'perfil'">Perfil</button
+      ><button [class.active]="tab === 'vehiculos'" (click)="tab = 'vehiculos'">Vehículos</button
+      ><button [class.active]="tab === 'historial'" (click)="tab = 'historial'">Historial</button>
+    </div>
+    @if (tab === 'perfil') {
+      <form class="form two-columns editor-form" [formGroup]="perfil" (ngSubmit)="guardarPerfil()">
+        <label>Nombre<input formControlName="nombre" /></label
+        ><label>Correo electrónico<input type="email" formControlName="correo" /></label>
+        <button class="button button-primary" type="submit">Guardar perfil</button>
+        @if (mensaje) {
+          <p class="notice">{{ mensaje }}</p>
+        }
+      </form>
+    }
+    @if (tab === 'vehiculos') {
+      <div class="admin-heading">
+        <h3>Mis vehículos</h3>
+        <button class="button button-primary" (click)="editarVehiculo()">Agregar vehículo</button>
+      </div>
+      @for (vehiculo of autocine.vehiculosDe(usuario); track vehiculo.id) {
+        <article class="simple-card">
+          <div>
+            <strong>{{ vehiculo.modelo }}</strong>
+            <p>Color {{ vehiculo.color }} · Placas {{ vehiculo.placas }}</p>
+          </div>
+          <button (click)="editarVehiculo(vehiculo)">Editar</button
+          ><button (click)="eliminarVehiculo(vehiculo.id)">Eliminar</button>
+        </article>
+      } @empty {
+        <p class="help-text">Aún no tienes vehículos registrados.</p>
+      }
+      @if (mostrarVehiculo) {
+        <form
+          class="form two-columns editor-form"
+          [formGroup]="vehiculo"
+          (ngSubmit)="guardarVehiculo()"
+        >
+          <label>Marca y modelo<input formControlName="modelo" /></label
+          ><label>Color<input formControlName="color" /></label
+          ><label>Placas<input formControlName="placas" /></label>
+          <button class="button button-primary" type="submit">Guardar vehículo</button
+          ><button class="button button-secondary" type="button" (click)="mostrarVehiculo = false">
+            Cancelar
+          </button>
+        </form>
+      }
+      @if (mensajeVehiculo) {
+        <p class="notice">{{ mensajeVehiculo }}</p>
+      }
+    }
+    @if (tab === 'historial') {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Película</th>
+              <th>Fecha / función</th>
+              <th>Cajones</th>
+              <th>Total</th>
+              <th>Folio / estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reserva of autocine.reservasDe(usuario); track reserva.id) {
+              <tr>
+                <td>{{ reserva.pelicula }}</td>
+                <td>{{ reserva.fecha }} · {{ reserva.horario }}</td>
+                <td>{{ reserva.cajones.join(', ') }}</td>
+                <td>{{ reserva.total | currency: 'MXN' }}</td>
+                <td>
+                  <button (click)="boleto = reserva">{{ reserva.codigo }}</button><br /><small>{{
+                    reserva.estado === 'acceso-validado' ? 'Acceso validado' : 'Pendiente'
+                  }}</small>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">Todavía no tienes reservas.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (boleto) {
+        <div class="ticket">
+          <h3>Boleto de demostración · {{ boleto.codigo }}</h3>
+          <div class="qr-placeholder"><strong>QR ILUSTRATIVO</strong></div>
+          <p>{{ boleto.pelicula }} · {{ boleto.fecha }} · {{ boleto.horario }}</p>
+          <p>Cajón {{ boleto.cajones.join(', ') }}</p>
+          <button (click)="boleto = null">Cerrar boleto</button>
+        </div>
+      }
+    }
+  </div>
+</main>

@@ -1,0 +1,18 @@
+.information-section .section-heading {
+  justify-content: center;
+  text-align: center;
+}
+
+.information-section .info-grid {
+  width: min(900px, 100%);
+  margin: 0 auto;
+}
+
+.information-section .info-grid > div {
+  text-align: center;
+}
+
+.information-section .info-grid p {
+  text-align: justify;
+  text-align-last: center;
+}
