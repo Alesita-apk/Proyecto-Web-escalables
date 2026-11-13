@@ -1,0 +1,6 @@
+<app-site-header />
+@if (autocine.errorCarga()) {
+  <p class="container" role="alert">{{ autocine.errorCarga() }}</p>
+}
+<router-outlet />
+<app-site-footer />

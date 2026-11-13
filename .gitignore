@@ -39,6 +39,15 @@ testem.log
 /typings
 __screenshots__/
 
+/Proyecto/node_modules
+/Proyecto/dist
+/Proyecto/.angular
+/Server/node_modules
+/Server/dist
+/Server/.env
+/Proyecto/.env
+/.env
+
 # System files
 .DS_Store
 Thumbs.db
